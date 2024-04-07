@@ -46,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 串口接收，信号槽关联
     connect(mySerialPort, SIGNAL(readyRead()), this, SLOT(serialPortRead_Slot()));
+
+    ui->txtRec->appendPlainText("text test!!!!!!!");
 }
 
 MainWindow::~MainWindow()
@@ -83,7 +85,7 @@ void MainWindow::serialPortRead_Slot()
 
     QByteArray recBuf;
     recBuf = mySerialPort->readAll();
-
+    rx_data_handle(&recBuf,recBuf.size());
     // 接收字节计数
     recvNum += recBuf.size();
     // 状态栏显示计数值
@@ -379,3 +381,25 @@ void MainWindow::on_chkRec_stateChanged(int arg1)
 //        }
 //    }
 //}
+void MainWindow::rx_data_handle(QByteArray * data, uint8_t len){
+    Q_UNUSED(data)
+    Q_UNUSED(len)
+}
+
+void MainWindow::tx_data_handle(QByteArray *data, uint8_t len)
+{
+    Q_UNUSED(data)
+    Q_UNUSED(len)
+}
+
+void MainWindow::cmd_send(CMD_TYPE cmd, uint8_t *data)
+{
+    Q_UNUSED(cmd)
+    Q_UNUSED(data)
+}
+void MainWindow::on_clean_textRec_clicked()
+{
+    ui->txtRec->clear();
+}
+
+

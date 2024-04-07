@@ -48,7 +48,7 @@
        <enum>Qt::ClickFocus</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="widget">
        <property name="geometry">
@@ -308,6 +308,200 @@
        <attribute name="label">
         <string>运动控制</string>
        </attribute>
+       <widget class="QWidget" name="widget_3" native="true">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>-10</y>
+          <width>331</width>
+          <height>291</height>
+         </rect>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>320</width>
+          <height>0</height>
+         </size>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <property name="horizontalSpacing">
+          <number>20</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>10</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>拇指</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="thumb_SButton">
+           <property name="text">
+            <string>启动</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QPushButton" name="thumb_WButton">
+           <property name="text">
+            <string>伸展</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>食指</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="forefinger_SButton">
+           <property name="text">
+            <string>启动</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="forefinger_WButton">
+           <property name="text">
+            <string>伸展</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>中指</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="middle_SButton">
+           <property name="text">
+            <string>启动</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QPushButton" name="middle_WButton">
+           <property name="text">
+            <string>伸展</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>无名指</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QPushButton" name="ring_SButton">
+           <property name="text">
+            <string>启动</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QPushButton" name="ring_WButton">
+           <property name="text">
+            <string>伸展</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_6">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>小指</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QPushButton" name="little_SButton">
+           <property name="text">
+            <string>启动</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2">
+          <widget class="QPushButton" name="little_WButton">
+           <property name="text">
+            <string>伸展</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
       <widget class="QWidget" name="set_page">
        <property name="geometry">
@@ -333,6 +527,32 @@
        </size>
       </property>
       <layout class="QGridLayout" name="gridLayout_7">
+       <item row="2" column="0">
+        <widget class="QWidget" name="widget_11" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>380</width>
+           <height>250</height>
+          </size>
+         </property>
+         <property name="accessibleDescription">
+          <string/>
+         </property>
+         <widget class="QPushButton" name="clean_textRec">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>10</y>
+            <width>91</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>清除信息</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label">
          <property name="text">
@@ -350,19 +570,6 @@
          </property>
          <property name="readOnly">
           <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QWidget" name="widget_11" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>380</width>
-           <height>250</height>
-          </size>
-         </property>
-         <property name="accessibleDescription">
-          <string/>
          </property>
         </widget>
        </item>

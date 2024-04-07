@@ -13,6 +13,17 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+enum
+{
+    RDA = 0x04, //数据帧头
+    SDA = 0x40, //命令帧头
+};
+
+enum CMD_TYPE
+{
+    CONTROL = 0,
+
+};
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -33,6 +44,8 @@ private slots:
 
     void on_chkRec_stateChanged(int arg1);
 
+    void on_clean_textRec_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -43,8 +56,14 @@ private:
     QLabel *lblSendNum;
     QLabel *lblRecvNum;
     void setNumOnLabel(QLabel *lbl, QString strS, long num);
+    void rx_data_handle(QByteArray *data, uint8_t len);
+    void tx_data_handle(QByteArray *data, uint8_t len);
+    void cmd_send(CMD_TYPE cmd, uint8_t *data);
 
     // 定时发送-定时器
     QTimer *timSend;
+
+    uint8_t rx_data[16];
+    uint8_t tx_data[16];
 };
 #endif // MAINWINDOW_H
