@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "QSignalMapper"
 #include <QDebug>
+
+
+QString fingerName[5] = {"拇指","食指","中指","无名指","小指"};
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -20,26 +24,34 @@ MainWindow::MainWindow(QWidget *parent)
     // 设置标签最小大小
     lblSendNum->setMinimumSize(100, 20);
     lblRecvNum->setMinimumSize(100, 20);
-    //statusBar()->showMessage("留言", 5000);// 留言显示，过期时间单位为ms，过期后不再有显示
-    //statusBar()->setSizeGripEnabled(false); // 是否显示右下角拖放控制点，默认显示
-    //statusBar()->setStyleSheet(QString("QStatusBar::item{border: 0px}")); // 设置不显示label的边框
-    //lblSendNum->setAlignment(Qt::AlignHCenter);// 设置label属性
-    //sBar->addPermanentWidget();//addSeparator();// 添加分割线，不能用
-    // 状态栏显示计数值
-    //lblSendNum->setText("S: 0");
-    //lblRecvNum->setText("R: 0");
     setNumOnLabel(lblSendNum, "S: ", sendNum);
     setNumOnLabel(lblRecvNum, "R: ", recvNum);
     // 从右往左依次添加
     sBar->addPermanentWidget(lblSendNum);
     sBar->addPermanentWidget(lblRecvNum);
 
-    // 定时发送-定时器
-//    timSend = new QTimer;
-//    timSend->setInterval(1000);// 设置默认定时时长1000ms
-//    connect(timSend, &QTimer::timeout, this, [=](){
-//        on_btnSend_clicked();
-//    });
+    QSignalMapper * btnSMapper;
+    btnSMapper = new QSignalMapper(this);
+    QPushButton * Sbutton[5]={ui->thumb_SButton,ui->forefinger_SButton,ui->middle_SButton,ui->ring_SButton,
+                             ui->little_SButton};
+       for(int i = 0;i<5;i++)
+       {
+            connect(Sbutton[i], SIGNAL(clicked(bool)), btnSMapper, SLOT(map()));
+            btnSMapper->setMapping(Sbutton[i], i);
+       }
+    connect(btnSMapper, SIGNAL(mapped(int)), this, SLOT(hand_SBtnClicked(int)));
+
+
+    QSignalMapper * btnWMapper;
+    btnWMapper = new QSignalMapper(this);
+    QPushButton * Wbutton[5]={ui->thumb_WButton,ui->forefinger_WButton,ui->middle_WButton,ui->ring_WButton,
+                             ui->little_WButton};
+       for(int i = 0;i<5;i++)
+       {
+            connect(Wbutton[i], SIGNAL(clicked(bool)), btnWMapper, SLOT(map()));
+            btnWMapper->setMapping(Wbutton[i], i);
+       }
+    connect(btnWMapper, SIGNAL(mapped(int)), this, SLOT(hand_WBtnClicked(int)));
 
     // 新建一串口对象
     mySerialPort = new QSerialPort(this);
@@ -47,7 +59,12 @@ MainWindow::MainWindow(QWidget *parent)
     // 串口接收，信号槽关联
     connect(mySerialPort, SIGNAL(readyRead()), this, SLOT(serialPortRead_Slot()));
 
-    ui->txtRec->appendPlainText("text test!!!!!!!");
+    ui->TotalRadioButton->setChecked(true);
+    ui->singleControlWidget->setVisible(false);
+    ui->totalControlWidget->setVisible(true);
+    connect(ui->buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(selectButtonsClick(int)));
+
+
 }
 
 MainWindow::~MainWindow()
@@ -232,6 +249,78 @@ void MainWindow::on_btnSwitch_clicked()
 
 }
 
+void MainWindow::hand_SBtnClicked(int index){
+    QPushButton *SBtn_temp;
+    QPushButton *WBtn_temp;
+    switch (index) {
+    case 0:
+        SBtn_temp = ui->thumb_SButton;
+        WBtn_temp = ui->thumb_WButton;
+        break;
+    case 1:
+        SBtn_temp = ui->forefinger_SButton;
+        WBtn_temp = ui->forefinger_WButton;
+        break;
+    case 2:
+        SBtn_temp = ui->middle_SButton;
+        WBtn_temp = ui->middle_WButton;
+        break;
+    case 3:
+        SBtn_temp = ui->ring_SButton;
+        WBtn_temp = ui->ring_WButton;
+        break;
+    case 4:
+        SBtn_temp = ui->little_SButton;
+        WBtn_temp = ui->little_WButton;
+        break;
+    }
+    if(btnStatus[0][index] == false){
+        btnStatus[0][index] = true;
+        SBtn_temp->setText("循环");
+        //向mcu发送命令 todo
+        ui->txtRec->appendPlainText("[系统]:"+fingerName[index]+"循环命令已发送！");
+        WBtn_temp->setEnabled(false);
+    } else {
+        btnStatus[0][index] = false;
+        SBtn_temp->setText("停止");
+        //向mcu发送命令 todo
+        ui->txtRec->appendPlainText("[系统]:"+fingerName[index]+"停止命令已发送！");
+        WBtn_temp->setEnabled(true);
+    }
+}
+
+void MainWindow::hand_WBtnClicked(int index){
+    QPushButton *WBtn_tmep;
+    switch (index) {
+    case 0:
+        WBtn_tmep = ui->thumb_WButton;
+        break;
+    case 1:
+        WBtn_tmep = ui->forefinger_WButton;
+        break;
+    case 2:
+        WBtn_tmep = ui->middle_WButton;
+        break;
+    case 3:
+        WBtn_tmep = ui->ring_WButton;
+        break;
+    case 4:
+        WBtn_tmep = ui->little_WButton;
+        break;
+    }
+    if(btnStatus[1][index] == 0){
+        btnStatus[1][index] = 1;
+        WBtn_tmep->setText("收缩");
+        //向mcu发送命令 todo
+        ui->txtRec->appendPlainText("[系统]:"+fingerName[index]+"收缩命令已发送！");
+    } else {
+        btnStatus[1][index] = 0;
+        WBtn_tmep->setText("伸展");
+        //向mcu发送命令 todo
+        ui->txtRec->appendPlainText("[系统]:"+fingerName[index]+"伸展命令已发送！");
+    }
+
+}
 // 发送按键槽函数
 // 如果勾选16进制发送，按照asc2的16进制发送
 //void MainWindow::on_btnSend_clicked()
@@ -269,16 +358,6 @@ void MainWindow::setNumOnLabel(QLabel *lbl, QString strS, long num)
     lbl->setText(str);
 }
 
-void MainWindow::on_btnClearRec_clicked()
-{
-    ui->txtRec->clear();
-    // 清除发送、接收字节计数
-    sendNum = 0;
-    recvNum = 0;
-    // 状态栏显示计数值
-    setNumOnLabel(lblSendNum, "S: ", sendNum);
-    setNumOnLabel(lblRecvNum, "R: ", recvNum);
-}
 
 //void MainWindow::on_btnClearSend_clicked()
 //{
@@ -400,6 +479,60 @@ void MainWindow::cmd_send(CMD_TYPE cmd, uint8_t *data)
 void MainWindow::on_clean_textRec_clicked()
 {
     ui->txtRec->clear();
+    // 清除发送、接收字节计数
+    sendNum = 0;
+    recvNum = 0;
+    // 状态栏显示计数值
+    setNumOnLabel(lblSendNum, "S: ", sendNum);
+    setNumOnLabel(lblRecvNum, "R: ", recvNum);
 }
 
 
+
+void MainWindow::on_totall_SButton_clicked()
+{
+    if(btnStatus[2][0] == false){
+        btnStatus[2][0] = true;
+        ui->totall_SButton->setText("循环");
+        ui->totall_WButton->setEnabled(false);
+        //向mcu发送命令 todo
+        ui->txtRec->appendPlainText("[系统]:所有手指循环命令已发送！");
+    } else {
+        btnStatus[2][0] = false;
+        ui->totall_SButton->setText("停止");
+        ui->totall_WButton->setEnabled(true);
+        //向mcu发送命令 todo
+        ui->txtRec->appendPlainText("[系统]:所有手指收停止令已发送！");
+    }
+}
+
+void MainWindow::on_totall_WButton_clicked()
+{
+    if(btnStatus[2][1] == false){
+        btnStatus[2][1] = true;
+        ui->totall_WButton->setText("伸展");
+
+        //向mcu发送命令 todo
+
+        ui->txtRec->appendPlainText("[系统]:所有手指伸展命令已发送！");
+    } else {
+        btnStatus[2][1] = false;
+        ui->totall_WButton->setText("收缩");
+
+        //向mcu发送命令 todo
+
+        ui->txtRec->appendPlainText("[系统]:所有手指收缩命令已发送！");
+    }
+}
+void MainWindow::selectButtonsClick(int id)
+{
+    if(id == ui->buttonGroup->id(ui->TotalRadioButton)){
+        ui->singleControlWidget->setVisible(false);
+        ui->totalControlWidget->setVisible(true);
+    } else if(id == ui->buttonGroup->id(ui->SingleRadioButton)){
+        ui->singleControlWidget->setVisible(true);
+        ui->totalControlWidget->setVisible(false);
+    }
+
+    //向mcu发送停止命令 todo
+}

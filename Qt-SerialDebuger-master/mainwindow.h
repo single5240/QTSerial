@@ -13,11 +13,6 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-enum
-{
-    RDA = 0x04, //数据帧头
-    SDA = 0x40, //命令帧头
-};
 
 enum CMD_TYPE
 {
@@ -40,11 +35,16 @@ private slots:
 
     void serialPortRead_Slot();
 
-    void on_btnClearRec_clicked();
-
     void on_chkRec_stateChanged(int arg1);
 
     void on_clean_textRec_clicked();
+
+    void hand_SBtnClicked(int);
+    void hand_WBtnClicked(int);
+    void on_totall_SButton_clicked();
+
+    void on_totall_WButton_clicked();
+    void selectButtonsClick(int);
 
 private:
     Ui::MainWindow *ui;
@@ -65,5 +65,7 @@ private:
 
     uint8_t rx_data[16];
     uint8_t tx_data[16];
+
+    bool btnStatus[3][5];
 };
 #endif // MAINWINDOW_H
