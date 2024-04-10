@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "QSignalMapper"
 #include <QDebug>
+#include <QTime>
 
 
 QString fingerName[5] = {"拇指","食指","中指","无名指","小指"};
@@ -64,7 +65,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->totalControlWidget->setVisible(true);
     connect(ui->buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(selectButtonsClick(int)));
 
+    ui->thumb_radioButton->setChecked(true);
+    connect(ui->buttonGroup_2, SIGNAL(buttonClicked(int)), this, SLOT(selectButtonsClick2(int)));
 
+    ui->active_Button->setEnabled(false);
+
+    sendData.resize(10);
 }
 
 MainWindow::~MainWindow()
@@ -277,13 +283,13 @@ void MainWindow::hand_SBtnClicked(int index){
     if(btnStatus[0][index] == false){
         btnStatus[0][index] = true;
         SBtn_temp->setText("循环");
-        //向mcu发送命令 todo
+        cmd_send_control(CONTROL, index, CIRCUL);
         ui->txtRec->appendPlainText("[系统]:"+fingerName[index]+"循环命令已发送！");
         WBtn_temp->setEnabled(false);
     } else {
         btnStatus[0][index] = false;
         SBtn_temp->setText("停止");
-        //向mcu发送命令 todo
+        cmd_send_control(CONTROL, index, STOP);
         ui->txtRec->appendPlainText("[系统]:"+fingerName[index]+"停止命令已发送！");
         WBtn_temp->setEnabled(true);
     }
@@ -311,12 +317,12 @@ void MainWindow::hand_WBtnClicked(int index){
     if(btnStatus[1][index] == 0){
         btnStatus[1][index] = 1;
         WBtn_tmep->setText("收缩");
-        //向mcu发送命令 todo
+        cmd_send_control(CONTROL, index, SHRINK);
         ui->txtRec->appendPlainText("[系统]:"+fingerName[index]+"收缩命令已发送！");
     } else {
         btnStatus[1][index] = 0;
         WBtn_tmep->setText("伸展");
-        //向mcu发送命令 todo
+        cmd_send_control(CONTROL, index, STRETCH);
         ui->txtRec->appendPlainText("[系统]:"+fingerName[index]+"伸展命令已发送！");
     }
 
@@ -471,11 +477,33 @@ void MainWindow::tx_data_handle(QByteArray *data, uint8_t len)
     Q_UNUSED(len)
 }
 
-void MainWindow::cmd_send(CMD_TYPE cmd, uint8_t *data)
+void MainWindow::cmd_send_control(CMD_TYPE cmd, uint8_t finger_index, uint8_t finger_status)
 {
-    Q_UNUSED(cmd)
-    Q_UNUSED(data)
+    sendData[0] = cmd;
+    sendData[1] = finger_index;
+    sendData[2] = finger_status;
+    sendData[3] = cmd;
+    mySerialPort->write(sendData,4);
 }
+
+void MainWindow::cmd_send_paramset(CMD_TYPE cmd, uint8_t finger_index, uint8_t speed, uint8_t dynamics)
+{
+    sendData[0] = cmd;
+    sendData[1] = finger_index;
+    sendData[2] = speed;
+    sendData[3] = dynamics;
+    sendData[4] = cmd;
+    mySerialPort->write(sendData,5);
+}
+
+void MainWindow::cmd_send_modeset(CMD_TYPE cmd,  uint8_t mode)
+{
+    sendData[0] = cmd;
+    sendData[1] = mode;
+    sendData[2] = cmd;
+    mySerialPort->write(sendData,3);
+}
+
 void MainWindow::on_clean_textRec_clicked()
 {
     ui->txtRec->clear();
@@ -495,13 +523,13 @@ void MainWindow::on_totall_SButton_clicked()
         btnStatus[2][0] = true;
         ui->totall_SButton->setText("循环");
         ui->totall_WButton->setEnabled(false);
-        //向mcu发送命令 todo
+        cmd_send_control(CONTROL, TOTAl, CIRCUL);
         ui->txtRec->appendPlainText("[系统]:所有手指循环命令已发送！");
     } else {
         btnStatus[2][0] = false;
         ui->totall_SButton->setText("停止");
         ui->totall_WButton->setEnabled(true);
-        //向mcu发送命令 todo
+        cmd_send_control(CONTROL, TOTAl, STOP);
         ui->txtRec->appendPlainText("[系统]:所有手指收停止令已发送！");
     }
 }
@@ -511,16 +539,12 @@ void MainWindow::on_totall_WButton_clicked()
     if(btnStatus[2][1] == false){
         btnStatus[2][1] = true;
         ui->totall_WButton->setText("伸展");
-
-        //向mcu发送命令 todo
-
+        cmd_send_control(CONTROL, TOTAl, STRETCH);
         ui->txtRec->appendPlainText("[系统]:所有手指伸展命令已发送！");
     } else {
         btnStatus[2][1] = false;
         ui->totall_WButton->setText("收缩");
-
-        //向mcu发送命令 todo
-
+        cmd_send_control(CONTROL, TOTAl, SHRINK);
         ui->txtRec->appendPlainText("[系统]:所有手指收缩命令已发送！");
     }
 }
@@ -533,6 +557,55 @@ void MainWindow::selectButtonsClick(int id)
         ui->singleControlWidget->setVisible(true);
         ui->totalControlWidget->setVisible(false);
     }
+    cmd_send_control(CONTROL, TOTAl, STOP);
+}
 
-    //向mcu发送停止命令 todo
+void MainWindow::selectButtonsClick2(int id)
+{
+    Q_UNUSED(id)
+}
+
+void MainWindow::on_paramSet_Button_clicked()
+{
+    ui->txtRec->appendPlainText("[系统]:参数设置命令已发送！");
+    float speed_value = ui->speed_spinBox->value();
+    float dynamics_value = ui->dynamics__spinBox->value();
+    int finger_index = -(ui->buttonGroup_2->checkedId()+2);
+
+    cmd_send_paramset(PARAMSET, finger_index, speed_value, dynamics_value);
+    ui->paramSet_Button->setEnabled(false);
+    Sleep(1000);
+    ui->paramSet_Button->setEnabled(true);
+}
+
+
+void MainWindow::Sleep(int msec)
+{
+    QTime dieTime = QTime::currentTime().addMSecs(msec);
+    while( QTime::currentTime() < dieTime )
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+}
+
+void MainWindow::on_active_Button_clicked()
+{
+    ui->active_Button->setEnabled(false);
+    ui->passive_Button->setEnabled(true);
+    ui->txtRec->appendPlainText("[系统]设置为主动模式！");
+    cmd_send_control(CONTROL, TOTAl, STOP);
+    Sleep(10);
+    cmd_send_modeset(MODESET,ACTIVE);
+    ui->control_page->setEnabled(true);
+    ui->toolBox->setCurrentWidget(ui->control_page);
+}
+
+void MainWindow::on_passive_Button_clicked()
+{
+    ui->passive_Button->setEnabled(false);
+    ui->active_Button->setEnabled(true);
+    ui->txtRec->appendPlainText("[系统]设置为被动模式！");
+    cmd_send_control(CONTROL, TOTAl, STOP);
+    Sleep(10);
+    cmd_send_modeset(MODESET,PASSIVE);
+    ui->control_page->setEnabled(false);
+
 }
