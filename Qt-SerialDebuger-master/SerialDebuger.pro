@@ -1,5 +1,6 @@
 QT       += core gui serialport
-
+Qt       += QtCharts
+QT += printsupport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
@@ -20,11 +21,13 @@ RC_ICONS = debug_32px_1103189_easyicon.net.ico
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    mycombobox.cpp
+    mycombobox.cpp \
+    qcustomplot.cpp
 
 HEADERS += \
     mainwindow.h \
-    mycombobox.h
+    mycombobox.h \
+    qcustomplot.h
 
 FORMS += \
     mainwindow.ui

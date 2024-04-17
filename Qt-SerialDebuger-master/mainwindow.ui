@@ -84,19 +84,6 @@
            </size>
           </property>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="5" column="0">
-            <widget class="QLabel" name="lblSwitch">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>20</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>串口操作</string>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="0">
             <widget class="QLabel" name="lblBaudRate">
              <property name="maximumSize">
@@ -107,6 +94,71 @@
              </property>
              <property name="text">
               <string>波特率</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="lblCheck">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>奇偶校验</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="lblStop">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>停止位</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QPushButton" name="btnSwitch">
+             <property name="text">
+              <string>打开串口</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QComboBox" name="cmbCheck">
+             <item>
+              <property name="text">
+               <string>无</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>奇校验</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>偶校验</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="lblSwitch">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>串口操作</string>
              </property>
             </widget>
            </item>
@@ -164,9 +216,6 @@
              </item>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="myComboBox" name="cmbSerialPort"/>
-           </item>
            <item row="3" column="1">
             <widget class="QComboBox" name="cmbData">
              <property name="currentIndex">
@@ -194,33 +243,6 @@
              </item>
             </widget>
            </item>
-           <item row="6" column="0">
-            <widget class="QCheckBox" name="chkRec">
-             <property name="text">
-              <string>16进制接收</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="lblCheck">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>20</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>奇偶校验</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QPushButton" name="btnSwitch">
-             <property name="text">
-              <string>打开串口</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0">
             <widget class="QLabel" name="lblSerialPort">
              <property name="maximumSize">
@@ -234,44 +256,8 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="lblStop">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>20</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>停止位</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QComboBox" name="cmbCheck">
-             <item>
-              <property name="text">
-               <string>无</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>奇校验</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>偶校验</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="6" column="1">
-            <widget class="QCheckBox" name="chkSend">
-             <property name="text">
-              <string>16进制发送</string>
-             </property>
-            </widget>
+           <item row="0" column="1">
+            <widget class="myComboBox" name="cmbSerialPort"/>
            </item>
           </layout>
          </widget>
@@ -750,7 +736,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>力度</string>
+                <string>扭矩</string>
                </property>
               </widget>
              </item>
@@ -760,13 +746,13 @@
                 <double>2.000000000000000</double>
                </property>
                <property name="maximum">
-                <double>10.000000000000000</double>
+                <double>40.000000000000000</double>
                </property>
                <property name="singleStep">
                 <double>0.200000000000000</double>
                </property>
                <property name="value">
-                <double>5.000000000000000</double>
+                <double>20.000000000000000</double>
                </property>
               </widget>
              </item>
@@ -923,8 +909,27 @@
         <height>450</height>
        </size>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="1" column="0">
+        <widget class="QPlainTextEdit" name="txtRec">
+         <property name="minimumSize">
+          <size>
+           <width>380</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
         <widget class="QPushButton" name="clean_textRec">
          <property name="maximumSize">
           <size>
@@ -937,20 +942,7 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QPlainTextEdit" name="txtRec">
-         <property name="minimumSize">
-          <size>
-           <width>380</width>
-           <height>100</height>
-          </size>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
+       <item row="2" column="0">
         <widget class="QWidget" name="widget_11" native="true">
          <property name="minimumSize">
           <size>
@@ -963,50 +955,47 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_9">
           <item row="0" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <property name="spacing">
-             <number>50</number>
-            </property>
-            <item>
-             <widget class="QPushButton" name="active_Button">
-              <property name="minimumSize">
-               <size>
-                <width>200</width>
-                <height>100</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>主动模式</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="passive_Button">
-              <property name="minimumSize">
-               <size>
-                <width>200</width>
-                <height>100</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>被动模式</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <spacer name="verticalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
+           <widget class="QPushButton" name="active_Button">
+            <property name="minimumSize">
              <size>
-              <width>20</width>
-              <height>121</height>
+              <width>200</width>
+              <height>50</height>
              </size>
             </property>
-           </spacer>
+            <property name="text">
+             <string>主动模式</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="passive_Button">
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>被动模式</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="position_chart">
+            <property name="text">
+             <string>位置</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QRadioButton" name="niuju_chart">
+            <property name="text">
+             <string>扭矩</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="QCustomPlot" name="customPlot" native="true"/>
           </item>
          </layout>
         </widget>
@@ -1033,6 +1022,12 @@
    <class>myComboBox</class>
    <extends>QComboBox</extends>
    <header>mycombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

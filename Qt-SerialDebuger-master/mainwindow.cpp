@@ -3,7 +3,9 @@
 #include "QSignalMapper"
 #include <QDebug>
 #include <QTime>
-
+#include <QtCharts/QChartView>
+#include "qcustomplot.h"
+#include <QMessageBox>
 
 QString fingerName[5] = {"拇指","食指","中指","无名指","小指"};
 
@@ -71,6 +73,29 @@ MainWindow::MainWindow(QWidget *parent)
     ui->active_Button->setEnabled(false);
 
     sendData.resize(10);
+    QVector<double> x(40), y(40); //初始化向量x和y
+       for (int i=0; i<40; ++i)
+       {
+         x[i] = i; // x范围[-1,1]
+         y[i] = 90*sin(x[i]); // y=x*x
+       }
+       ui->customPlot->addGraph();//添加数据曲线（一个图像可以有多个数据曲线）
+
+       // graph(0);可以获取某个数据曲线（按添加先后排序）
+       // setData();为数据曲线关联数据
+       ui->customPlot->graph(0)->setData(x, y);
+       ui->customPlot->graph(0)->setName("手指角度");// 设置图例名称
+       // 为坐标轴添加标签
+       ui->customPlot->xAxis->setLabel("时间(s)");
+       ui->customPlot->yAxis->setLabel("位置(°)");
+       // 设置坐标轴的范围，以看到所有数据
+       ui->customPlot->xAxis->setRange(0, 100);
+       ui->customPlot->yAxis->setRange(0, 100);
+       ui->customPlot->legend->setVisible(true); // 显示图例
+       // 重画图像
+       ui->customPlot->replot();
+
+       ui->position_chart->setChecked(true);
 }
 
 MainWindow::~MainWindow()
@@ -115,23 +140,23 @@ void MainWindow::serialPortRead_Slot()
     setNumOnLabel(lblRecvNum, "R: ", recvNum);
 
     // 判断是否为16进制接收，将以后接收的数据全部转换为16进制显示（先前接收的部分在多选框槽函数中进行转换。最好多选框和接收区组成一个自定义控件，方便以后调用）
-    if(ui->chkRec->checkState() == false){
+//    if(ui->chkRec->checkState() == false){
 
-        // 在当前位置插入文本，不会发生换行。如果没有移动光标到文件结尾，会导致文件超出当前界面显示范围，界面也不会向下滚动。
-        ui->txtRec->insertPlainText(recBuf);
-    }else{
-        // 16进制显示，并转换为大写
-        QString str1 = recBuf.toHex().toUpper();//.data();
-        // 添加空格
-        QString str2;
-        for(int i = 0; i<str1.length (); i+=2)
-        {
-            str2 += str1.mid (i,2);
-            str2 += " ";
-        }
-        ui->txtRec->insertPlainText(str2);
-        //ui->txtRec->insertPlainText(recBuf.toHex());
-    }
+//        // 在当前位置插入文本，不会发生换行。如果没有移动光标到文件结尾，会导致文件超出当前界面显示范围，界面也不会向下滚动。
+//        ui->txtRec->insertPlainText(recBuf);
+//    }else{
+//        // 16进制显示，并转换为大写
+//        QString str1 = recBuf.toHex().toUpper();//.data();
+//        // 添加空格
+//        QString str2;
+//        for(int i = 0; i<str1.length (); i+=2)
+//        {
+//            str2 += str1.mid (i,2);
+//            str2 += " ";
+//        }
+//        ui->txtRec->insertPlainText(str2);
+//        //ui->txtRec->insertPlainText(recBuf.toHex());
+//    }
 
     // 移动光标到文本结尾
     ui->txtRec->moveCursor(QTextCursor::End);
@@ -576,6 +601,9 @@ void MainWindow::on_paramSet_Button_clicked()
     ui->paramSet_Button->setEnabled(false);
     Sleep(1000);
     ui->paramSet_Button->setEnabled(true);
+
+    int ret = QMessageBox::critical(this, tr("超时警告"), tr("未及时收到单片机信号！！！\n""检查通信及单片机后重试！"));
+
 }
 
 
