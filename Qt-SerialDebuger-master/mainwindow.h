@@ -35,6 +35,7 @@ enum FINGER_INDEX
     RING = 3,
     LITTLE = 4,
     TOTAl =5,
+    SINGLE = 6,
 };
 
 enum FINGLE_STATUS
@@ -61,7 +62,7 @@ private slots:
 
     void serialPortRead_Slot();
 
-    void on_chkRec_stateChanged(int arg1);
+//    void on_chkRec_stateChanged(int arg1);
 
     void on_clean_textRec_clicked();
 
@@ -79,6 +80,8 @@ private slots:
 
     void on_passive_Button_clicked();
 
+
+    void realtimeDataSlot();
 private:
     Ui::MainWindow *ui;
 
@@ -105,9 +108,7 @@ private:
     bool btnStatus[3][5];
     QByteArray sendData;
 
-
-
-
-
+    uint8_t position[256][5];
+    int positionCount;
 };
 #endif // MAINWINDOW_H

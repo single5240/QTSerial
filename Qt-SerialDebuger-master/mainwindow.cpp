@@ -73,34 +73,114 @@ MainWindow::MainWindow(QWidget *parent)
     ui->active_Button->setEnabled(false);
 
     sendData.resize(10);
-    QVector<double> x(40), y(40); //初始化向量x和y
-       for (int i=0; i<40; ++i)
-       {
-         x[i] = i; // x范围[-1,1]
-         y[i] = 90*sin(x[i]); // y=x*x
-       }
-       ui->customPlot->addGraph();//添加数据曲线（一个图像可以有多个数据曲线）
+//    QVector<double> x(40), y(40); //初始化向量x和y
+//       for (int i=0; i<40; ++i)
+//       {
+//         x[i] = i; // x范围[-1,1]
+//         y[i] = 90*sin(x[i]); // y=x*x
+//       }
+//       ui->customPlot->addGraph();//添加数据曲线（一个图像可以有多个数据曲线）
 
-       // graph(0);可以获取某个数据曲线（按添加先后排序）
-       // setData();为数据曲线关联数据
-       ui->customPlot->graph(0)->setData(x, y);
-       ui->customPlot->graph(0)->setName("手指角度");// 设置图例名称
-       // 为坐标轴添加标签
-       ui->customPlot->xAxis->setLabel("时间(s)");
-       ui->customPlot->yAxis->setLabel("位置(°)");
-       // 设置坐标轴的范围，以看到所有数据
-       ui->customPlot->xAxis->setRange(0, 100);
-       ui->customPlot->yAxis->setRange(0, 100);
-       ui->customPlot->legend->setVisible(true); // 显示图例
-       // 重画图像
-       ui->customPlot->replot();
+//       // graph(0);可以获取某个数据曲线（按添加先后排序）
+//       // setData();为数据曲线关联数据
+//       ui->customPlot->graph(0)->setData(x, y);
+//       ui->customPlot->graph(0)->setName("手指角度");// 设置图例名称
+//       // 为坐标轴添加标签
+//       ui->customPlot->xAxis->setLabel("时间(s)");
+//       ui->customPlot->yAxis->setLabel("位置(°)");
+//       // 设置坐标轴的范围，以看到所有数据
+//       ui->customPlot->xAxis->setRange(0, 100);
+//       ui->customPlot->yAxis->setRange(0, 100);
+//       ui->customPlot->legend->setVisible(true); // 显示图例
+//       // 重画图像
+//       ui->customPlot->replot();
 
-       ui->position_chart->setChecked(true);
+//       ui->position_chart->setChecked(true);
+    QTimer *dataTimer = new QTimer();
+    ui->customPlot->addGraph(); // 拇指
+    ui->customPlot->graph(0)->setName("拇指");
+    ui->customPlot->graph(0)->setPen(QPen(QColor(40, 110, 255)));
+    ui->customPlot->addGraph(); // 食指
+    ui->customPlot->graph(1)->setName("食指");
+    ui->customPlot->graph(1)->setPen(QPen(QColor(255, 110, 40)));
+    ui->customPlot->addGraph(); // 中指
+    ui->customPlot->graph(2)->setName("中指");
+    ui->customPlot->graph(2)->setPen(QPen(QColor(64, 52, 39)));
+    ui->customPlot->addGraph(); // 无名指
+    ui->customPlot->graph(3)->setName("无名指");
+    ui->customPlot->graph(3)->setPen(QPen(QColor(19, 44, 51)));
+    ui->customPlot->addGraph(); // 小指
+    ui->customPlot->graph(4)->setName("小指");
+    ui->customPlot->graph(4)->setPen(QPen(QColor(150, 194, 78)));
+
+    QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
+    timeTicker->setTimeFormat("%h:%m:%s");
+    positionCount = 0;
+    ui->customPlot->xAxis->setTicker(timeTicker);
+    ui->customPlot->axisRect()->setupFullAxesBox();
+    ui->customPlot->yAxis->setRange(-10, 100);
+    memset(position,0,sizeof(position)/sizeof(uint8_t));
+    // make left and bottom axes transfer their ranges to right and top axes:
+    connect(ui->customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->xAxis2, SLOT(setRange(QCPRange)));
+    connect(ui->customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->yAxis2, SLOT(setRange(QCPRange)));
+
+    // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
+    connect(dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
+    dataTimer->start(5); // Interval 0 means to refresh as fast as possible
+    ui->position_chart->setChecked(true);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+void MainWindow::realtimeDataSlot(void)
+{
+    static QTime time(QTime::currentTime());
+    static int lastCount = 0;
+    // calculate two new data points:
+    double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds
+    static double lastPointKey = 0;
+    if (key-lastPointKey > 0.050) // at most add point every 2 ms
+    {
+      // add data to lines:
+        if(lastCount != positionCount){
+            for(int i=0;i<5;i++){
+                ui->customPlot->graph(i)->addData(key, (double)(position[positionCount][i]));
+            }
+        }else{
+            for(int i=0;i<5;i++){
+                ui->customPlot->graph(i)->addData(key, 0);
+            }
+        }
+        lastCount = positionCount;
+      // rescale value (vertical) axis to fit the current data:
+//      ui->customPlot->graph(0)->rescaleValueAxis(true);
+//      ui->customPlot->graph(1)->rescaleValueAxis(true); // 自动调整纵坐标
+//      ui->customPlot->graph(2)->rescaleValueAxis(true);
+//      ui->customPlot->graph(3)->rescaleValueAxis(true); // 自动调整纵坐标
+//      ui->customPlot->graph(4)->rescaleValueAxis(true);
+
+      lastPointKey = key;
+    }
+    // make key axis range scroll with the data (at a constant range size of 8):
+    ui->customPlot->xAxis->setRange(key, 20, Qt::AlignRight);
+    ui->customPlot->replot();
+
+    // calculate frames per second:
+//    static double lastFpsKey;
+//    static int frameCount;
+//    ++frameCount;
+//    if (key-lastFpsKey > 2) // average fps over 2 seconds
+//    {
+////      ui->statusBar->showMessage(
+////            QString("%1 FPS, Total Data points: %2")
+////            .arg(frameCount/(key-lastFpsKey), 0, 'f', 0)
+////            .arg(ui->customPlot->graph(0)->data()->size()+ui->customPlot->graph(1)->data()->size())
+////            , 0);  // 这个显示可以不要
+//      lastFpsKey = key;
+//      frameCount = 0;
+//    }
 }
 
 // 绘图事件
@@ -400,40 +480,40 @@ void MainWindow::setNumOnLabel(QLabel *lbl, QString strS, long num)
 //}
 
 // 先前接收的部分在多选框状态转换槽函数中进行转换。（最好多选框和接收区组成一个自定义控件，方便以后调用）
-void MainWindow::on_chkRec_stateChanged(int arg1)
-{
-    // 获取文本字符串
-    QString txtBuf = ui->txtRec->toPlainText();
+//void MainWindow::on_chkRec_stateChanged(int arg1)
+//{
+//    // 获取文本字符串
+//    QString txtBuf = ui->txtRec->toPlainText();
 
-    // 获取多选框状态，未选为0，选中为2
-    // 为0时，多选框未被勾选，接收区先前接收的16进制数据转换为asc2字符串格式
-    if(arg1 == 0){
+//    // 获取多选框状态，未选为0，选中为2
+//    // 为0时，多选框未被勾选，接收区先前接收的16进制数据转换为asc2字符串格式
+//    if(arg1 == 0){
 
-        QByteArray str1 = QByteArray::fromHex(txtBuf.toUtf8());
-        // 文本控件清屏，显示新文本
-        ui->txtRec->clear();
-        ui->txtRec->insertPlainText(str1);
-        // 移动光标到文本结尾
-        ui->txtRec->moveCursor(QTextCursor::End);
+//        QByteArray str1 = QByteArray::fromHex(txtBuf.toUtf8());
+//        // 文本控件清屏，显示新文本
+//        ui->txtRec->clear();
+//        ui->txtRec->insertPlainText(str1);
+//        // 移动光标到文本结尾
+//        ui->txtRec->moveCursor(QTextCursor::End);
 
-    }else{// 不为0时，多选框被勾选，接收区先前接收asc2字符串转换为16进制显示
+//    }else{// 不为0时，多选框被勾选，接收区先前接收asc2字符串转换为16进制显示
 
-        QByteArray str1 = txtBuf.toUtf8().toHex().toUpper();
-        // 添加空格
-        QByteArray str2;
-        for(int i = 0; i<str1.length (); i+=2)
-        {
-            str2 += str1.mid (i,2);
-            str2 += " ";
-        }
-        // 文本控件清屏，显示新文本
-        ui->txtRec->clear();
-        ui->txtRec->insertPlainText(str2);
-        // 移动光标到文本结尾
-        ui->txtRec->moveCursor(QTextCursor::End);
+//        QByteArray str1 = txtBuf.toUtf8().toHex().toUpper();
+//        // 添加空格
+//        QByteArray str2;
+//        for(int i = 0; i<str1.length (); i+=2)
+//        {
+//            str2 += str1.mid (i,2);
+//            str2 += " ";
+//        }
+//        // 文本控件清屏，显示新文本
+//        ui->txtRec->clear();
+//        ui->txtRec->insertPlainText(str2);
+//        // 移动光标到文本结尾
+//        ui->txtRec->moveCursor(QTextCursor::End);
 
-    }
-}
+//    }
+//}
 
 //// 先前发送区的部分在多选框状态转换槽函数中进行转换。（最好多选框和发送区组成一个自定义控件，方便以后调用）
 //void MainWindow::on_chkSend_stateChanged(int arg1)
@@ -492,8 +572,16 @@ void MainWindow::on_chkRec_stateChanged(int arg1)
 //    }
 //}
 void MainWindow::rx_data_handle(QByteArray * data, uint8_t len){
-    Q_UNUSED(data)
-    Q_UNUSED(len)
+//    qDebug()<<len<<positionCount<<data[0];
+    if(data->constData()[0] == (char)0x80){
+        positionCount++;
+        if(positionCount>=256)
+                        positionCount=0;
+        for (int i=0; i<5; i++) {
+            position[positionCount][i] = data->constData()[i+1];
+        }
+    }
+
 }
 
 void MainWindow::tx_data_handle(QByteArray *data, uint8_t len)
@@ -576,13 +664,15 @@ void MainWindow::on_totall_WButton_clicked()
 void MainWindow::selectButtonsClick(int id)
 {
     if(id == ui->buttonGroup->id(ui->TotalRadioButton)){
+        cmd_send_control(CONTROL, TOTAl, STOP);
         ui->singleControlWidget->setVisible(false);
         ui->totalControlWidget->setVisible(true);
     } else if(id == ui->buttonGroup->id(ui->SingleRadioButton)){
+        cmd_send_control(CONTROL, SINGLE, STOP);
         ui->singleControlWidget->setVisible(true);
         ui->totalControlWidget->setVisible(false);
     }
-    cmd_send_control(CONTROL, TOTAl, STOP);
+
 }
 
 void MainWindow::selectButtonsClick2(int id)
@@ -635,5 +725,4 @@ void MainWindow::on_passive_Button_clicked()
     Sleep(10);
     cmd_send_modeset(MODESET,PASSIVE);
     ui->control_page->setEnabled(false);
-
 }
