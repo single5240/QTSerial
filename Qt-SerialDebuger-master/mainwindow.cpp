@@ -124,10 +124,37 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->xAxis2, SLOT(setRange(QCPRange)));
     connect(ui->customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->yAxis2, SLOT(setRange(QCPRange)));
 
+    ui->customPlot2->addGraph(); // 拇指
+    ui->customPlot2->graph(0)->setName("拇指");
+    ui->customPlot2->graph(0)->setPen(QPen(QColor(40, 110, 255)));
+    ui->customPlot2->addGraph(); // 食指
+    ui->customPlot2->graph(1)->setName("食指");
+    ui->customPlot2->graph(1)->setPen(QPen(QColor(255, 110, 40)));
+    ui->customPlot2->addGraph(); // 中指
+    ui->customPlot2->graph(2)->setName("中指");
+    ui->customPlot2->graph(2)->setPen(QPen(QColor(64, 52, 39)));
+    ui->customPlot2->addGraph(); // 无名指
+    ui->customPlot2->graph(3)->setName("无名指");
+    ui->customPlot2->graph(3)->setPen(QPen(QColor(19, 44, 51)));
+    ui->customPlot2->addGraph(); // 小指
+    ui->customPlot2->graph(4)->setName("小指");
+    ui->customPlot2->graph(4)->setPen(QPen(QColor(150, 194, 78)));
+
+    QSharedPointer<QCPAxisTickerTime> timeTicker2(new QCPAxisTickerTime);
+    timeTicker2->setTimeFormat("%h:%m:%s");
+    positionCount = 0;
+    ui->customPlot2->xAxis->setTicker(timeTicker2);
+    ui->customPlot2->axisRect()->setupFullAxesBox();
+    ui->customPlot2->yAxis->setRange(-10, 400);
+    memset(position,0,sizeof(position)/sizeof(uint8_t));
+    // make left and bottom axes transfer their ranges to right and top axes:
+    connect(ui->customPlot2->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot2->xAxis2, SLOT(setRange(QCPRange)));
+    connect(ui->customPlot2->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot2->yAxis2, SLOT(setRange(QCPRange)));
+
+
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
     connect(dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
     dataTimer->start(5); // Interval 0 means to refresh as fast as possible
-    ui->position_chart->setChecked(true);
 }
 
 MainWindow::~MainWindow()
@@ -147,10 +174,12 @@ void MainWindow::realtimeDataSlot(void)
         if(lastCount != positionCount){
             for(int i=0;i<5;i++){
                 ui->customPlot->graph(i)->addData(key, (double)(position[positionCount][i]));
+                ui->customPlot2->graph(i)->addData(key, (double)(niuju[positionCount][i]));
             }
         }else{
             for(int i=0;i<5;i++){
                 ui->customPlot->graph(i)->addData(key, 0);
+                ui->customPlot2->graph(i)->addData(key, (double)(niuju[positionCount][i]));
             }
         }
         lastCount = positionCount;
@@ -166,6 +195,8 @@ void MainWindow::realtimeDataSlot(void)
     // make key axis range scroll with the data (at a constant range size of 8):
     ui->customPlot->xAxis->setRange(key, 20, Qt::AlignRight);
     ui->customPlot->replot();
+    ui->customPlot2->xAxis->setRange(key, 20, Qt::AlignRight);
+    ui->customPlot2->replot();
 
     // calculate frames per second:
 //    static double lastFpsKey;
@@ -579,6 +610,7 @@ void MainWindow::rx_data_handle(QByteArray * data, uint8_t len){
                         positionCount=0;
         for (int i=0; i<5; i++) {
             position[positionCount][i] = data->constData()[i+1];
+            niuju[positionCount][i] = data->constData()[i+6];
         }
     }
 

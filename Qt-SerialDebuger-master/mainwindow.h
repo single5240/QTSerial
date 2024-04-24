@@ -108,7 +108,8 @@ private:
     bool btnStatus[3][5];
     QByteArray sendData;
 
-    uint8_t position[256][5];
+    uint8_t position[256][5]; //位置
+    uint8_t niuju[256][5];    //扭矩
     int positionCount;
 };
 #endif // MAINWINDOW_H

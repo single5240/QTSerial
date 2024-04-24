@@ -909,7 +909,20 @@
         <height>450</height>
        </size>
       </property>
-      <layout class="QGridLayout" name="gridLayout_7">
+      <layout class="QGridLayout" name="gridLayout_9">
+       <item row="0" column="0">
+        <widget class="QPushButton" name="clean_textRec">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>清除信息</string>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="0">
         <widget class="QPlainTextEdit" name="txtRec">
          <property name="minimumSize">
@@ -929,19 +942,6 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="clean_textRec">
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>清除信息</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0">
         <widget class="QWidget" name="widget_11" native="true">
          <property name="minimumSize">
@@ -953,20 +953,7 @@
          <property name="accessibleDescription">
           <string/>
          </property>
-         <layout class="QGridLayout" name="gridLayout_9">
-          <item row="0" column="0">
-           <widget class="QPushButton" name="active_Button">
-            <property name="minimumSize">
-             <size>
-              <width>200</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>主动模式</string>
-            </property>
-           </widget>
-          </item>
+         <layout class="QGridLayout" name="gridLayout_7">
           <item row="0" column="1">
            <widget class="QPushButton" name="passive_Button">
             <property name="minimumSize">
@@ -980,22 +967,45 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="position_chart">
-            <property name="text">
-             <string>位置</string>
+          <item row="1" column="0" colspan="2">
+           <widget class="QTabWidget" name="tabWidget">
+            <property name="currentIndex">
+             <number>1</number>
             </property>
+            <widget class="QWidget" name="position_tab">
+             <attribute name="title">
+              <string>位置</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_10">
+              <item row="0" column="0">
+               <widget class="QCustomPlot" name="customPlot" native="true"/>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="niuju_tab">
+             <attribute name="title">
+              <string>扭矩</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_11">
+              <item row="0" column="0">
+               <widget class="QCustomPlot" name="customPlot2" native="true"/>
+              </item>
+             </layout>
+            </widget>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QRadioButton" name="niuju_chart">
+          <item row="0" column="0">
+           <widget class="QPushButton" name="active_Button">
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>50</height>
+             </size>
+            </property>
             <property name="text">
-             <string>扭矩</string>
+             <string>主动模式</string>
             </property>
            </widget>
-          </item>
-          <item row="2" column="0" colspan="2">
-           <widget class="QCustomPlot" name="customPlot" native="true"/>
           </item>
          </layout>
         </widget>
